@@ -1,0 +1,10 @@
+{
+  "name": "hailstone-scrabble",
+  "version": "1.0.0",
+  "description": "Hailstone Scrabble — Scrabble fused with the Collatz Conjecture (3n+1 push-your-luck word strategy)",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "pack:itch": "mkdir -p dist && zip -r dist/hailstone-scrabble-itch.zip index.html manifest.json styles src -x '*.DS_Store'"
+  }
+}

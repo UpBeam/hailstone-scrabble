@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="arcade">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#111318" />
+  <meta name="description" content="Hailstone Scrabble — Scrabble fused with the Collatz Conjecture (3n+1 push-your-luck word strategy)." />
+  <title>Hailstone Scrabble</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="stylesheet" href="./styles/themes.css" />
+  <link rel="stylesheet" href="./styles/main.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <div class="scoreboard" aria-label="Score">
+        <div id="pill-p1" class="score-side active-turn" data-tip="You" data-tip-align="left">
+          <span class="score-dot p1"></span>
+          <span id="p1-score" class="score-val">0</span>
+        </div>
+        <span id="bag-count" class="score-bag" data-tip="Tiles left in bag">84</span>
+        <div id="pill-p2" class="score-side" data-tip="AI · Medium">
+          <span id="p2-score" class="score-val">0</span>
+          <span class="score-dot p2"></span>
+        </div>
+      </div>
+
+      <div class="icon-group">
+        <button id="btn-rules" class="icon-btn" data-tip="Rules (3n+1)" aria-label="Rules"></button>
+        <button id="btn-theme" class="icon-btn" data-tip="Switch theme" aria-label="Switch theme"></button>
+        <button id="btn-sound" class="icon-btn" data-tip="Sound on" aria-label="Toggle sound"></button>
+        <button id="btn-settings" class="icon-btn" data-tip="Settings" data-tip-align="right" aria-label="Settings"></button>
+      </div>
+    </header>
+
+    <!-- 11x11 Crossword Board -->
+    <main class="board-stage">
+      <div class="board-frame">
+        <div id="board-grid" class="board-grid" role="grid" aria-label="11 by 11 Hailstone Scrabble Board"></div>
+      </div>
+    </main>
+
+    <!-- Live Collatz Parity Preview -->
+    <div id="preview-strip" class="preview-strip" aria-live="polite"></div>
+
+    <!-- Rack + Controls -->
+    <section class="rack-wrap">
+      <div id="rack" class="rack" aria-label="Letter rack"></div>
+      <div class="action-dock">
+        <div class="icon-group">
+          <button id="btn-recall" class="icon-btn" data-tip="Recall tiles" data-tip-pos="top" data-tip-align="left" aria-label="Recall tiles"></button>
+          <button id="btn-shuffle" class="icon-btn" data-tip="Shuffle rack" data-tip-pos="top" aria-label="Shuffle rack"></button>
+          <button id="btn-swap" class="icon-btn" data-tip="Swap rack &amp; pass" data-tip-pos="top" aria-label="Swap and pass"></button>
+        </div>
+        <div class="icon-group">
+          <button id="btn-play" class="btn primary" disabled>Play</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Rules Modal -->
+  <div id="modal-rules" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Hailstone Scrabble (3n + 1)</h2>
+        <button class="icon-btn" data-close-modal="modal-rules" aria-label="Close"></button>
+      </div>
+      <div class="rule-list">
+        <div class="rule-item">
+          <strong>Even Word (n) → Bank n / 2</strong>
+          Safe &amp; surgical: immediately bank half your word's Scrabble score.
+        </div>
+        <div class="rule-item">
+          <strong>Odd Word (n) → Spawn Hailstone (3n + 1)</strong>
+          No immediate points. Plants a live Hailstone token valued 3n + 1 on the board.
+        </div>
+        <div class="rule-item">
+          <strong>Hook a Hailstone (H)</strong>
+          Play an <em>even</em> word through it to halve H (banking the drop). Play an <em>odd</em> word to spike H → 3H + 1!
+        </div>
+        <div class="rule-item">
+          <strong>Crush to 1 (+15 Jackpot)</strong>
+          Halving a Hailstone to 1 shatters it for a +15 bonus. First to 100 points wins.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="modal-settings" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Settings</h2>
+        <button class="icon-btn" data-close-modal="modal-settings" aria-label="Close"></button>
+      </div>
+      <p class="settings-label">Opponent</p>
+      <div class="segmented" id="mode-segmented">
+        <button class="seg-btn" data-mode="pvp">2P</button>
+        <button class="seg-btn" data-mode="ai-easy">AI 1</button>
+        <button class="seg-btn active" data-mode="ai-medium">AI 2</button>
+        <button class="seg-btn" data-mode="ai-hard">AI 3</button>
+      </div>
+      <p class="settings-label">Theme</p>
+      <div class="segmented" id="theme-segmented" style="grid-template-columns: repeat(3, 1fr);">
+        <button class="seg-btn active" data-theme="arcade">Obsidian</button>
+        <button class="seg-btn" data-theme="wood">Walnut</button>
+        <button class="seg-btn" data-theme="paper">Paper</button>
+      </div>
+      <button id="btn-new-game" class="btn primary" style="width: 100%; margin-top: 6px;">New Match</button>
+    </div>
+  </div>
+
+  <!-- Victory Modal -->
+  <div id="modal-victory" class="modal-backdrop hidden">
+    <div class="modal-card" style="text-align: center;">
+      <h2 id="victory-title" style="margin: 0 0 6px;">You Win</h2>
+      <p id="victory-sub" style="margin: 0 0 14px; font-size: 13px; color: var(--ink-2);"></p>
+      <button id="btn-rematch" class="btn primary" style="width: 100%;">Play Again</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "Hailstone Scrabble",
+  "short_name": "Hailstone",
+  "description": "Even words halve and bank. Odd words spike 3n+1. Crash Hailstones to 1 for the jackpot.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#111318",
+  "theme_color": "#111318"
+}
